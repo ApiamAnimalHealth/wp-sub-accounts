@@ -96,7 +96,7 @@ class Wp_Sub_Accounts_Public {
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->plugin_name, WP_SUB_ACCOUNTS_PLUGIN_URL . 'assets/js/wp-sub-accounts-public.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->plugin_name, WP_SUB_ACCOUNTS_PLUGIN_URL . 'assets/js/wp-sub-accounts-public.js', array( 'jquery' ), filemtime( get_stylesheet_directory() . WP_SUB_ACCOUNTS_PLUGIN_URL . 'assets/js/wp-sub-accounts-public.js' ), true );
 
 	}
 
