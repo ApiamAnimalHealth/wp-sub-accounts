@@ -75,7 +75,7 @@ class Wp_Sub_Accounts_Update {
 
 	public function check_version() {
 
-	    $version_in_use  = get_option( 'wp_sub_accounts_version', '1.0.0' );
+	    $version_in_use  = get_option( 'wp_sub_accounts_version', '1.1.0' );
 		$version_in_code = wp_sub_accounts()->get_version();
 
 		if ( $version_in_use != $version_in_code ) {
