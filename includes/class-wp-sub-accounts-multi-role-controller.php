@@ -67,15 +67,34 @@ class Wp_Sub_Accounts_Multi_Role_Controller {
      */
     public function process_checklist( $user_id ) {
 
-        if ( empty( $_POST['_wp_http_referer'] ) ) {
+        // Only ever act on the admin user screens. Both hooks that reach this
+        // method - profile_update and user_register - also fire on the front
+        // end, profile_update on every WooCommerce checkout by way of
+        // WC_Checkout::update_customer_data() calling wp_update_user(). The
+        // checklist is rendered only by user_new_form / show_user_profile /
+        // edit_user_profile, so there is no front-end request to serve.
+        if ( ! is_admin() ) {
             return;
         }
 
-        if ( isset( $_POST['wp_sub_accounts_multi_roles_nonce'] ) && ! wp_verify_nonce( $_POST['wp_sub_accounts_multi_roles_nonce'], 'update-wp-sub-accounts-multi-roles' ) ) {
+        // A missing nonce must fail. The previous test was
+        // `isset( ... ) && ! wp_verify_nonce( ... )`, which rejected only a
+        // nonce that was present and wrong - a request carrying no nonce at
+        // all passed straight through it.
+        if ( ! isset( $_POST['wp_sub_accounts_multi_roles_nonce'] )
+            || ! wp_verify_nonce( $_POST['wp_sub_accounts_multi_roles_nonce'], 'update-wp-sub-accounts-multi-roles' ) ) {
             return;
         }
 
-        $new_roles = isset( $_POST['wp_sub_accounts_multi_roles'] ) ? $_POST['wp_sub_accounts_multi_roles'] : array();
+        // If the checklist was not on the submitted form then this is somebody
+        // else's request, not ours.
+        if ( ! isset( $_POST['wp_sub_accounts_multi_roles'] ) ) {
+            return;
+        }
+
+        // Kept as a third line of defence: update_roles() starts with
+        // set_role( '' ), so handing it an empty array strips every role.
+        $new_roles = (array) $_POST['wp_sub_accounts_multi_roles'];
         if ( empty( $new_roles ) ) {
             return;
         }
